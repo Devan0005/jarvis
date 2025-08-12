@@ -244,6 +244,9 @@ function showMessage(text, type) {
 
 // Add some interactive effects
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize mobile navigation
+    initMobileNavigation();
+    
     // Add animation to service cards on scroll
     const observerOptions = {
         threshold: 0.1,
@@ -268,18 +271,24 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(card);
     });
     
-    // Add hover effects to navigation
+    // Add hover effects to navigation (only on desktop)
     const navLogo = document.querySelector('.nav-logo h2');
-    navLogo.addEventListener('mouseenter', function() {
-        this.style.transform = 'scale(1.05)';
-    });
-    
-    navLogo.addEventListener('mouseleave', function() {
-        this.style.transform = 'scale(1)';
-    });
-    
-    // Add transition to logo
-    navLogo.style.transition = 'transform 0.3s ease';
+    if (navLogo) {
+        navLogo.addEventListener('mouseenter', function() {
+            if (window.innerWidth > 768) {
+                this.style.transform = 'scale(1.05)';
+            }
+        });
+        
+        navLogo.addEventListener('mouseleave', function() {
+            if (window.innerWidth > 768) {
+                this.style.transform = 'scale(1)';
+            }
+        });
+        
+        // Add transition to logo
+        navLogo.style.transition = 'transform 0.3s ease';
+    }
     
     // Admin access - click detection
     const secretLogo = document.getElementById('secretLogo');
@@ -325,6 +334,43 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('EmailJS not loaded. Using fallback email method.');
     }
 });
+
+// Mobile Navigation Toggle
+function initMobileNavigation() {
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            
+            // Change hamburger icon
+            const icon = navToggle.querySelector('span');
+            if (navMenu.classList.contains('active')) {
+                icon.textContent = '✕';
+            } else {
+                icon.textContent = '☰';
+            }
+        });
+        
+        // Close menu when clicking on a link
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                navToggle.querySelector('span').textContent = '☰';
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+                navToggle.querySelector('span').textContent = '☰';
+            }
+        });
+    }
+}
 
 // Add some console logs for debugging
 console.log('FreelanceProjects website loaded successfully!');

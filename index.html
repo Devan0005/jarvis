@@ -13,7 +13,10 @@
             <div class="nav-logo">
                 <h2 id="secretLogo" style="cursor: pointer;" title="Click to access Admin Panel">JARVIS</h2>
             </div>
-            <ul class="nav-menu">
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span>☰</span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="services.html">Services</a></li>
                 <li><a href="customers.html">Customers</a></li>
@@ -71,17 +74,17 @@
             <form id="orderForm" class="order-form">
                 <div class="form-group">
                     <label for="name">Full Name *</label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" name="name" required autocomplete="name" placeholder="Enter your full name">
                 </div>
                 
                 <div class="form-group">
                     <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" placeholder="Enter your email address">
                 </div>
                 
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone">
+                    <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="Enter your phone number">
                 </div>
                 
                 <div class="form-group">

@@ -13,7 +13,10 @@
             <div class="nav-logo">
                 <h2>JARVIS</h2>
             </div>
-            <ul class="nav-menu">
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span>☰</span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="services.html">Services</a></li>
                 <li><a href="customers.html">Customers</a></li>
@@ -36,25 +39,16 @@
     </section>
 
     <!-- Empty State Section -->
-    <section style="padding: 80px 0; background: #f8f9fa; min-height: 60vh; display: flex; align-items: center;">
+    <section id="customersSection" style="padding: 80px 0; background: #f8f9fa; min-height: 60vh;">
         <div class="container">
-            <div style="text-align: center; max-width: 600px; margin: 0 auto;">
-                <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">👥</div>
-                <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Building Our Customer Base</h2>
-                <p style="color: #7f8c8d; font-size: 1.1rem; margin-bottom: 2rem;">
-                    We're currently working on exciting projects for our clients. Real customer testimonials, 
-                    project showcases, and success stories will be featured here as we grow our satisfied customer base.
-                </p>
-                <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 2rem;">
-                    <h3 style="color: #3498db; margin-bottom: 1rem;">🚀 Be Our First Featured Customer!</h3>
-                    <p style="color: #555; margin-bottom: 1.5rem;">
-                        Start your project with us today and be among the first customers to be showcased on our platform.
-                    </p>
-                    <a href="index.html#order" class="btn btn-primary">Order Your Project</a>
+            <!-- Customers will be loaded here dynamically -->
+            <div id="customersContent">
+                <!-- Loading state -->
+                <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+                    <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">👥</div>
+                    <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Loading Customers...</h2>
+                    <p style="color: #7f8c8d; font-size: 1.1rem;">Please wait while we load our customer testimonials.</p>
                 </div>
-                <p style="color: #95a5a6; font-size: 0.9rem;">
-                    All testimonials and project details are managed through our admin panel and will be displayed here once available.
-                </p>
             </div>
         </div>
     </section>
@@ -92,5 +86,115 @@
             <p>&copy; 2024 JARVIS. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Customer Loading Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCustomers();
+        });
+
+        function loadCustomers() {
+            const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+            const customersContent = document.getElementById('customersContent');
+
+            if (customers.length === 0) {
+                // Show empty state
+                customersContent.innerHTML = `
+                    <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+                        <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">👥</div>
+                        <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Building Our Customer Base</h2>
+                        <p style="color: #7f8c8d; font-size: 1.1rem; margin-bottom: 2rem;">
+                            We're currently working on exciting projects for our clients. Real customer testimonials, 
+                            project showcases, and success stories will be featured here as we grow our satisfied customer base.
+                        </p>
+                        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                            <h3 style="color: #3498db; margin-bottom: 1rem;">🚀 Be Our First Featured Customer!</h3>
+                            <p style="color: #555; margin-bottom: 1.5rem;">
+                                Start your project with us today and be among the first customers to be showcased on our platform.
+                            </p>
+                            <a href="index.html#order" class="btn btn-primary">Order Your Project</a>
+                        </div>
+                        <p style="color: #95a5a6; font-size: 0.9rem;">
+                            All testimonials and project details are managed through our admin panel and will be displayed here once available.
+                        </p>
+                    </div>
+                `;
+            } else {
+                // Show customers testimonials
+                displayCustomerTestimonials(customers);
+            }
+        }
+
+        function displayCustomerTestimonials(customers) {
+            const customersContent = document.getElementById('customersContent');
+            
+            let html = `
+                <div style="text-align: center; margin-bottom: 3rem;">
+                    <h2 style="color: #2c3e50; margin-bottom: 1rem;">Happy Customers</h2>
+                    <p style="color: #7f8c8d; font-size: 1.1rem;">See what our satisfied clients have to say about our work</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            `;
+
+            customers.forEach(customer => {
+                const ratingStars = customer.rating ? '⭐'.repeat(customer.rating) : '';
+                const testimonialText = customer.testimonial || 'Great experience working with JARVIS team!';
+                
+                html += `
+                    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 1px solid #e1e8ed; transition: transform 0.3s ease, box-shadow 0.3s ease;" 
+                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 20px rgba(0,0,0,0.1)'">
+                        
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #3498db, #2980b9); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: bold;">
+                                ${customer.name.charAt(0).toUpperCase()}
+                            </div>
+                            <h3 style="color: #2c3e50; margin-bottom: 0.5rem; font-size: 1.2rem;">${customer.name}</h3>
+                            <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.5rem;">${customer.type}</p>
+                            ${ratingStars ? `<div style="color: #f39c12; font-size: 1.2rem; margin-bottom: 1rem;">${ratingStars}</div>` : ''}
+                        </div>
+                        
+                        <div style="text-align: left;">
+                            <p style="color: #555; font-style: italic; line-height: 1.6; margin-bottom: 1rem; position: relative; padding-left: 1rem;">
+                                <span style="position: absolute; left: 0; top: 0; color: #3498db; font-size: 1.5rem; font-weight: bold;">"</span>
+                                ${testimonialText}
+                                <span style="color: #3498db; font-size: 1.5rem; font-weight: bold;">"</span>
+                            </p>
+                        </div>
+                        
+                        <div style="text-align: right; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ecf0f1;">
+                            <small style="color: #95a5a6;">
+                                Customer since ${new Date(customer.addedDate).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+                            </small>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+                
+                <div style="text-align: center; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h3 style="color: #3498db; margin-bottom: 1rem;">Ready to Join Our Happy Customers?</h3>
+                    <p style="color: #555; margin-bottom: 1.5rem;">
+                        Start your project with us today and experience the same quality service our customers love.
+                    </p>
+                    <a href="index.html#order" class="btn btn-primary" style="margin-right: 1rem;">Start Your Project</a>
+                    <a href="services.html" class="btn btn-secondary">View Our Services</a>
+                </div>
+            `;
+
+            customersContent.innerHTML = html;
+        }
+
+        // Auto-refresh customer data every 10 seconds to show real-time updates
+        setInterval(function() {
+            loadCustomers();
+        }, 10000);
+
+        // Initialize mobile navigation for customers page
+        initMobileNavigation();
+    </script>
 </body>
 </html> 

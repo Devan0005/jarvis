@@ -13,7 +13,10 @@
             <div class="nav-logo">
                 <h2>JARVIS</h2>
             </div>
-            <ul class="nav-menu">
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span>☰</span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="services.html">Services</a></li>
                 <li><a href="customers.html">Customers</a></li>
@@ -203,5 +206,13 @@
             <p>&copy; 2024 JARVIS. All rights reserved.</p>
         </div>
     </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize mobile navigation for services page
+        document.addEventListener('DOMContentLoaded', function() {
+            initMobileNavigation();
+        });
+    </script>
 </body>
 </html> 
