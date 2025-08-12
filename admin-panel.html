@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - JARVIS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f8f9fa; 
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .admin-header { 
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%); 
+            color: white; 
+            padding: 25px 30px; 
+            border-radius: 15px; 
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(44, 62, 80, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logout-btn {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        .logout-btn:hover {
+            background: linear-gradient(45deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        .back-btn:hover {
+            background: linear-gradient(45deg, #2980b9, #1f5582);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .orders-section {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .project-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .project-type.website { background: #e3f2fd; color: #1976d2; }
+        .project-type.student { background: #f3e5f5; color: #7b1fa2; }
+        .project-type.application { background: #e8f5e8; color: #388e3c; }
+        .project-type.other { background: #fff3e0; color: #f57c00; }
+        .description-row {
+            background: #f8f9fa !important;
+        }
+        .description-content {
+            padding: 10px;
+            font-size: 0.9rem;
+            color: #555;
+            border-left: 3px solid #3498db;
+            padding-left: 15px;
+        }
+        .actions {
+            text-align: center;
+            padding: 20px;
+            background: #ecf0f1;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background: #2980b9; }
+        .btn-danger { background: #e74c3c; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-ack { 
+            background: #27ae60; 
+            font-size: 0.8rem; 
+            padding: 6px 12px; 
+        }
+        .btn-ack:hover { background: #229954; }
+        .acknowledged { 
+            background: #f0f8f0 !important; 
+            opacity: 0.8;
+        }
+        .acknowledged-badge { 
+            color: #27ae60; 
+            font-weight: bold; 
+            font-size: 0.85rem;
+        }
+        .ack-status { 
+            color: #27ae60; 
+            font-weight: bold; 
+        }
+        .refresh-note {
+            text-align: center;
+            color: #7f8c8d;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        .session-info {
+            position: absolute;
+            bottom: 15px;
+            right: 30px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .admin-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .admin-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+            margin-bottom: 0;
+        }
+        .admin-badge {
+            display: inline-block;
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .back-btn, .logout-btn { 
+                position: relative; 
+                top: 0; 
+                left: 0; 
+                right: 0; 
+                margin: 5px; 
+                display: inline-block; 
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+            .admin-header {
+                padding: 20px 15px 60px 15px;
+            }
+            .admin-title {
+                font-size: 1.8rem;
+                margin-top: 10px;
+            }
+            .admin-subtitle {
+                font-size: 1rem;
+            }
+            .admin-badge {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }
+            .session-info {
+                position: static;
+                display: block;
+                text-align: center;
+                margin-top: 15px;
+                background: rgba(255, 255, 255, 0.15);
+            }
+            .stats-grid { grid-template-columns: 1fr; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <a href="index.html" class="back-btn">← Back to Website</a>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <h1 class="admin-title">🔐 JARVIS Admin Dashboard</h1>
+        <p class="admin-subtitle">Comprehensive Management Portal</p>
+        <div class="admin-badge">Project Orders • Customer Management • Analytics</div>
+        <div class="session-info" id="sessionInfo"></div>
+    </div>
+    
+    <div id="statsGrid" class="stats-grid">
+        <!-- Stats will be loaded by JavaScript -->
+    </div>
+    
+    <div class="orders-section">
+        <div class="section-header">📋 Project Orders</div>
+        <div id="ordersContent">
+            <!-- Orders will be loaded by JavaScript -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn" onclick="window.print()">🖨️ Print Orders</button>
+            <button class="btn" onclick="downloadOrdersCSV()">📊 Export CSV</button>
+            <button class="btn btn-danger" onclick="clearAllOrders()">🗑️ Clear All Orders</button>
+            <button class="btn" onclick="window.location.reload()">🔄 Refresh</button>
+        </div>
+        
+        <div class="refresh-note">
+            Note: This page shows orders stored in browser localStorage. Refresh to see latest data.
+        </div>
+    </div>
+
+    <!-- Customer Management Section -->
+    <div class="orders-section" style="margin-top: 30px;">
+        <div class="section-header">👥 Customer Management</div>
+        <div style="padding: 20px;">
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #2c3e50; margin-bottom: 15px;">Add New Customer</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <input type="text" id="customerName" placeholder="Customer Name" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="email" id="customerEmail" placeholder="Customer Email" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="text" id="customerType" placeholder="Customer Type (e.g., Student, Business)" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <select id="customerRating" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="">Select Rating</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 stars)</option>
+                        <option value="4">⭐⭐⭐⭐ (4 stars)</option>
+                        <option value="3">⭐⭐⭐ (3 stars)</option>
+                        <option value="2">⭐⭐ (2 stars)</option>
+                        <option value="1">⭐ (1 star)</option>
+                    </select>
+                </div>
+                <textarea id="customerTestimonial" placeholder="Customer Testimonial (optional)" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px;"></textarea>
+                <button class="btn" onclick="addCustomer()">➕ Add Customer</button>
+            </div>
+            
+            <div id="customersContent">
+                <!-- Customers will be loaded by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Portfolio Management Section -->
+    <div class="orders-section" style="margin-top: 30px;">
+        <div class="section-header">🚀 Project Portfolio Management</div>
+        <div style="padding: 20px;">
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #2c3e50; margin-bottom: 15px;">Add New Project</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <input type="text" id="projectTitle" placeholder="Project Title" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="text" id="projectIcon" placeholder="Project Icon (emoji)" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="text" id="projectClient" placeholder="Client Name" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <input type="text" id="projectTechnologies" placeholder="Technologies (comma separated)" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                <textarea id="projectDescription" placeholder="Project Description" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px;"></textarea>
+                <button class="btn" onclick="addProject()">➕ Add Project</button>
+            </div>
+            
+            <div id="projectsContent">
+                <!-- Projects will be loaded by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuthentication()) {
+                return;
+            }
+            loadAdminData();
+            updateSessionInfo();
+        });
+        
+        function checkAuthentication() {
+            const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+            const loginTime = sessionStorage.getItem('loginTime');
+            
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                alert('⚠️ Access denied. Please log in first.');
+                window.location.href = 'admin.html';
+                return false;
+            }
+            
+            if (loginTime) {
+                const loginDate = new Date(loginTime);
+                const currentTime = new Date();
+                const timeDiff = (currentTime - loginDate) / (1000 * 60 * 60); // hours
+                
+                // Session expires after 2 hours
+                if (timeDiff >= 2) {
+                    alert('⏰ Session expired. Please log in again.');
+                    logout();
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        function updateSessionInfo() {
+            const loginTime = sessionStorage.getItem('loginTime');
+            if (loginTime) {
+                const loginDate = new Date(loginTime);
+                const sessionInfo = document.getElementById('sessionInfo');
+                sessionInfo.textContent = `Logged in: ${loginDate.toLocaleString()}`;
+            }
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            sessionStorage.removeItem('loginTime');
+            alert('👋 Logged out successfully!');
+            window.location.href = 'admin.html';
+        }
+        
+        function loadAdminData() {
+            const orders = JSON.parse(localStorage.getItem('projectRequests') || '[]');
+            const totalOrders = orders.length;
+            
+            // Calculate total revenue
+            const totalRevenue = orders.reduce((sum, order) => {
+                const estimate = calculateProjectEstimate(order.projectType, order.timeline);
+                return sum + estimate;
+            }, 0);
+            
+            // Update stats
+            updateStats(totalOrders, totalRevenue, orders);
+            
+            // Update orders table
+            updateOrdersTable(orders);
+            
+            // Load customers and projects
+            loadCustomers();
+            loadProjects();
+        }
+        
+        function updateStats(totalOrders, totalRevenue, orders) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${totalOrders}</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">₹${totalRevenue.toLocaleString()}</div>
+                    <div class="stat-label">Estimated Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${orders.filter(o => o.projectType === 'website').length}</div>
+                    <div class="stat-label">Website Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${orders.filter(o => o.projectType === 'student').length}</div>
+                    <div class="stat-label">Student Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${orders.filter(o => o.acknowledged).length}</div>
+                    <div class="stat-label">Acknowledged Orders</div>
+                </div>
+            `;
+        }
+        
+        function updateOrdersTable(orders) {
+            const ordersContent = document.getElementById('ordersContent');
+            
+            if (orders.length === 0) {
+                ordersContent.innerHTML = `
+                    <div class="no-orders">
+                        <h3>No orders found</h3>
+                        <p>Orders will appear here when customers submit project requests.</p>
+                        <a href="index.html" class="btn" style="margin-top: 15px;">Go to Website</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            let ordersHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Project Type</th>
+                            <th>Budget Range</th>
+                            <th>Timeline</th>
+                            <th>Estimate</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            orders.forEach((order, index) => {
+                const estimate = calculateProjectEstimate(order.projectType, order.timeline);
+                const date = new Date(order.submittedAt).toLocaleDateString('en-IN');
+                const time = new Date(order.submittedAt).toLocaleTimeString('en-IN');
+                
+                const acknowledged = order.acknowledged || false;
+                const acknowledgedClass = acknowledged ? 'acknowledged' : '';
+                const acknowledgedText = acknowledged ? '✅ Acknowledged' : '';
+                
+                ordersHTML += `
+                    <tr class="${acknowledgedClass}">
+                        <td>${index + 1}</td>
+                        <td><strong>${order.name}</strong><br><small>${order.email}</small></td>
+                        <td>${order.phone || 'N/A'}</td>
+                        <td><span class="project-type ${order.projectType}">${order.projectType}</span></td>
+                        <td>${order.budget || 'Not specified'}</td>
+                        <td>${order.timeline || 'Flexible'}</td>
+                        <td><strong>₹${estimate.toLocaleString()}</strong></td>
+                        <td>${date}<br><small>${time}</small><br><small class="ack-status">${acknowledgedText}</small></td>
+                        <td>
+                            ${!acknowledged ? 
+                                `<button class="btn btn-ack" onclick="sendAcknowledgment(${index})">📧 Acknowledge</button>` :
+                                `<span class="acknowledged-badge">✅ Done</span>`
+                            }
+                        </td>
+                    </tr>
+                    <tr class="description-row ${acknowledgedClass}">
+                        <td colspan="9">
+                            <div class="description-content">
+                                <strong>Project Description:</strong><br>
+                                ${order.description}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            ordersHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            ordersContent.innerHTML = ordersHTML;
+        }
+        
+        function calculateProjectEstimate(projectType, timeline) {
+            let basePrice = 0;
+            
+            switch(projectType) {
+                case 'student':
+                    basePrice = 299;
+                    break;
+                case 'application':
+                    basePrice = 599;
+                    break;
+                case 'website':
+                    basePrice = 899;
+                    break;
+                default:
+                    basePrice = 599;
+            }
+            
+            // Timeline multiplier
+            if (timeline === '1-week') {
+                basePrice *= 1.5; // Rush job
+            }
+            
+            return basePrice;
+        }
+        
+        function clearAllOrders() {
+            if (confirm('Are you sure you want to delete ALL orders? This cannot be undone!')) {
+                localStorage.removeItem('projectRequests');
+                alert('All orders cleared!');
+                window.location.reload();
+            }
+        }
+        
+        function downloadOrdersCSV() {
+            const orders = JSON.parse(localStorage.getItem('projectRequests') || '[]');
+            if (orders.length === 0) {
+                alert('No orders to export!');
+                return;
+            }
+            
+            let csv = 'Name,Email,Phone,Project Type,Budget,Timeline,Description,Submitted\n';
+            orders.forEach(order => {
+                csv += `"${order.name}","${order.email}","${order.phone || 'N/A'}","${order.projectType}","${order.budget || 'Not specified'}","${order.timeline || 'Flexible'}","${order.description.replace(/"/g, '""')}","${new Date(order.submittedAt).toLocaleDateString('en-IN')}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'freelance-orders-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Send acknowledgment email to customer
+        function sendAcknowledgment(orderIndex) {
+            const orders = JSON.parse(localStorage.getItem('projectRequests') || '[]');
+            if (orderIndex >= orders.length) {
+                alert('Order not found!');
+                return;
+            }
+            
+            const order = orders[orderIndex];
+            const estimate = calculateProjectEstimate(order.projectType, order.timeline);
+            
+            // Prepare acknowledgment email
+            const subject = `Project Request Acknowledged - JARVIS`;
+            const body = `Dear ${order.name},
+
+Thank you for your project request! We have received and reviewed your inquiry for a ${order.projectType} project.
+
+Project Details:
+- Project Type: ${order.projectType}
+- Budget Range: ${order.budget || 'Not specified'}
+- Timeline: ${order.timeline || 'Flexible'}
+- Estimated Cost: ₹${estimate.toLocaleString()}
+
+Your project description has been carefully reviewed and we're excited to work with you!
+
+Next Steps:
+1. We will prepare a detailed project proposal
+2. You'll receive a comprehensive quote within 24 hours
+3. We'll schedule a call to discuss your requirements in detail
+
+If you have any immediate questions or need to modify your requirements, please reply to this email.
+
+Contact Information:
+Email: gamingspider0005@gmail.com
+Response Time: Within 24 hours
+
+Best regards,
+JARVIS Team
+
+---
+This is an automated acknowledgment. Your project request was submitted on ${new Date(order.submittedAt).toLocaleDateString('en-IN')} at ${new Date(order.submittedAt).toLocaleTimeString('en-IN')}.`;
+
+            // Open email client with acknowledgment
+            const mailtoLink = `mailto:${order.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            try {
+                window.open(mailtoLink, '_blank');
+                
+                // Mark as acknowledged
+                orders[orderIndex].acknowledged = true;
+                orders[orderIndex].acknowledgedAt = new Date().toISOString();
+                localStorage.setItem('projectRequests', JSON.stringify(orders));
+                
+                // Refresh the page to show updated status
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+                
+                console.log(`✅ Acknowledgment sent to: ${order.email}`);
+                
+            } catch (error) {
+                console.log('❌ Error opening email client:', error);
+                alert('Could not open email client. Please check browser settings.');
+            }
+        }
+
+        // Customer Management Functions
+        function addCustomer() {
+            const name = document.getElementById('customerName').value.trim();
+            const email = document.getElementById('customerEmail').value.trim();
+            const type = document.getElementById('customerType').value.trim();
+            const rating = document.getElementById('customerRating').value;
+            const testimonial = document.getElementById('customerTestimonial').value.trim();
+
+            if (!name || !email || !type) {
+                alert('Please fill in at least Name, Email, and Customer Type');
+                return;
+            }
+
+            const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+            const newCustomer = {
+                id: Date.now(),
+                name,
+                email,
+                type,
+                rating: rating ? parseInt(rating) : null,
+                testimonial,
+                addedDate: new Date().toISOString()
+            };
+
+            customers.push(newCustomer);
+            localStorage.setItem('customers', JSON.stringify(customers));
+
+            // Clear form
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerEmail').value = '';
+            document.getElementById('customerType').value = '';
+            document.getElementById('customerRating').value = '';
+            document.getElementById('customerTestimonial').value = '';
+
+            loadCustomers();
+            alert('✅ Customer added successfully!');
+        }
+
+        function loadCustomers() {
+            const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+            const customersContent = document.getElementById('customersContent');
+
+            if (customers.length === 0) {
+                customersContent.innerHTML = '<div class="no-orders">No customers added yet. Add your first customer above!</div>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Type</th>
+                            <th>Rating</th>
+                            <th>Testimonial</th>
+                            <th>Added Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            customers.forEach((customer, index) => {
+                const ratingStars = customer.rating ? '⭐'.repeat(customer.rating) : 'Not rated';
+                const testimonialPreview = customer.testimonial ? 
+                    (customer.testimonial.length > 50 ? customer.testimonial.substring(0, 50) + '...' : customer.testimonial) : 
+                    'No testimonial';
+
+                html += `
+                    <tr>
+                        <td>${customer.name}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.type}</td>
+                        <td>${ratingStars}</td>
+                        <td title="${customer.testimonial || 'No testimonial'}">${testimonialPreview}</td>
+                        <td>${new Date(customer.addedDate).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteCustomer(${index})" style="font-size: 0.8rem; padding: 5px 10px;">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            customersContent.innerHTML = html;
+        }
+
+        function deleteCustomer(index) {
+            if (confirm('Are you sure you want to delete this customer?')) {
+                const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+                customers.splice(index, 1);
+                localStorage.setItem('customers', JSON.stringify(customers));
+                loadCustomers();
+                alert('✅ Customer deleted successfully!');
+            }
+        }
+
+        // Project Management Functions
+        function addProject() {
+            const title = document.getElementById('projectTitle').value.trim();
+            const icon = document.getElementById('projectIcon').value.trim();
+            const client = document.getElementById('projectClient').value.trim();
+            const technologies = document.getElementById('projectTechnologies').value.trim();
+            const description = document.getElementById('projectDescription').value.trim();
+
+            if (!title || !description) {
+                alert('Please fill in at least Project Title and Description');
+                return;
+            }
+
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            const newProject = {
+                id: Date.now(),
+                title,
+                icon: icon || '🌐',
+                client,
+                technologies: technologies.split(',').map(tech => tech.trim()).filter(tech => tech),
+                description,
+                addedDate: new Date().toISOString()
+            };
+
+            projects.push(newProject);
+            localStorage.setItem('projects', JSON.stringify(projects));
+
+            // Clear form
+            document.getElementById('projectTitle').value = '';
+            document.getElementById('projectIcon').value = '';
+            document.getElementById('projectClient').value = '';
+            document.getElementById('projectTechnologies').value = '';
+            document.getElementById('projectDescription').value = '';
+
+            loadProjects();
+            alert('✅ Project added successfully!');
+        }
+
+        function loadProjects() {
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            const projectsContent = document.getElementById('projectsContent');
+
+            if (projects.length === 0) {
+                projectsContent.innerHTML = '<div class="no-orders">No projects added yet. Add your first project above!</div>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Title</th>
+                            <th>Client</th>
+                            <th>Technologies</th>
+                            <th>Description</th>
+                            <th>Added Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            projects.forEach((project, index) => {
+                const techTags = project.technologies.map(tech => 
+                    `<span style="background: #e3f2fd; color: #1976d2; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.7rem; margin-right: 0.3rem;">${tech}</span>`
+                ).join('');
+                
+                const descriptionPreview = project.description.length > 60 ? 
+                    project.description.substring(0, 60) + '...' : 
+                    project.description;
+
+                html += `
+                    <tr>
+                        <td style="font-size: 1.5rem;">${project.icon}</td>
+                        <td>${project.title}</td>
+                        <td>${project.client || 'Not specified'}</td>
+                        <td>${techTags || 'No technologies listed'}</td>
+                        <td title="${project.description}">${descriptionPreview}</td>
+                        <td>${new Date(project.addedDate).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteProject(${index})" style="font-size: 0.8rem; padding: 5px 10px;">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            projectsContent.innerHTML = html;
+        }
+
+        function deleteProject(index) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+                projects.splice(index, 1);
+                localStorage.setItem('projects', JSON.stringify(projects));
+                loadProjects();
+                alert('✅ Project deleted successfully!');
+            }
+        }
+    </script>
+</body>
+</html> 
